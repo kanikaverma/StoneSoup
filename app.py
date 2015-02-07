@@ -1,12 +1,12 @@
 from flask import Flask, jsonify
-import requests
+import requests, unirest
 
 app = Flask(__name__)
 app.config["DEBUG"]=True
 
 @app.route('/')
 def hello():
-	return "Hello World! It's all happening right now!"
+	return "Hello We are cool! It's all happening right now!"
 
 @app.route('/home')
 def hellothere():
@@ -16,10 +16,12 @@ def hellothere():
 #<this is a variable> it can be overloaded into the function! wow!
 @app.route('/home/<food_query>')
 def getNews(food_query):
-	url = "http://food2fork.com/api/search/%s" % food_query
-	response_dict = requests.get(url)
-	return response_dict
-	#return requests.get(url)
+	response = requests.get("https://community-food2fork.p.mashape.com/search?key=fb087049410336a1a564b4d90772884a&q=%s",
+	                       headers = {
+	"X-Mashape-Key": "wBtGgGCJ65mshgqXuQksMa9vpohbp1RzC3AjsnKXEHKeWKqZH3",
+	"Accept": "application/json"
+  }).json()
+  	return jsonify(response)
 
 @app.errorhandler(404)
 def page_not_found(error):
