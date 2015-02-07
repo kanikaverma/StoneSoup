@@ -6,7 +6,7 @@ app.config["DEBUG"]=True
 
 @app.route('/')
 def hello():
-	return "Hello World! It's all happening right now!"
+	return "Hello We are cool! It's all happening right now!"
 
 @app.route('/home')
 def hellothere():
