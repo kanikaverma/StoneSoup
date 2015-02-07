@@ -16,12 +16,12 @@ def hellothere():
 #<this is a variable> it can be overloaded into the function! wow!
 @app.route('/home/<food_query>')
 def getNews(food_query):
-	response = unirest.get("https://community-food2fork.p.mashape.com/search?key=fb087049410336a1a564b4d90772884a&q=%s",
+	response = requests.get("https://community-food2fork.p.mashape.com/search?key=fb087049410336a1a564b4d90772884a&q=%s",
 	                       headers = {
 	"X-Mashape-Key": "wBtGgGCJ65mshgqXuQksMa9vpohbp1RzC3AjsnKXEHKeWKqZH3",
 	"Accept": "application/json"
   }).json()
-  	return jsonify(response.raw_body)
+  	return jsonify(response)
 
 @app.errorhandler(404)
 def page_not_found(error):
