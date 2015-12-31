@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, redirect, request
 import requests
 
 app = Flask(__name__)
@@ -6,33 +6,28 @@ app.config["DEBUG"]=True
 
 @app.route('/')
 def hello():
-	return "Hello We are cool! It's all happening right now!"
+	return render_template('index.html')
 
-@app.route('/home')
-def hellothere():
-	return "<h1>StoneSoup<h1><h2>Welcome to our kitchen!</h2><p>Here's what you should make today!</p>"
+@app.route('/search')
+def search():
+  return render_template('search.html')
+
+@app.route('/results', methods=["GET", "POST"])
+def get_results():
+  food_query = request.form['text']
+  food_query_processed = food_query.lower()
+  return redirect('/home/'+ food_query_processed)
 
 #dynamic routes with dynamicness! <define variable>
 #<this is a variable> it can be overloaded into the function! wow!
 @app.route('/home/<food_query>')
 def getNews(food_query):
-	response = requests.get("https://community-food2fork.p.mashape.com/search?key=fb087049410336a1a564b4d90772884a&q=%s"% food_query,
-	                       headers = {
-	"X-Mashape-Key": "wBtGgGCJ65mshgqXuQksMa9vpohbp1RzC3AjsnKXEHKeWKqZH3",
-	"Accept": "application/json"
+  response = requests.get("https://community-food2fork.p.mashape.com/search?key=fb087049410336a1a564b4d90772884a&q=%s"% food_query, headers = {
+  "X-Mashape-Key": "wBtGgGCJ65mshgqXuQksMa9vpohbp1RzC3AjsnKXEHKeWKqZH3",
+  "Accept": "application/json"
   }).json()
-
-	recipeList="<html><head><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css\"><title size=\"20\">StoneSoup</title></head><body bgcolor=\"7fffd4\"><center><h1>StoneSoup<h1><h2>Welcome to our kitchen!</h2><p>Here's what you should make today!</p>"
-	for x in response["recipes"]:
-		recipeList+="<h3><a href=\""+x["source_url"]+"\">"+x["title"]+"</a></h3><br><img src=\""+x["image_url"]+"\"/>"+"<br><br>"
-	
-
-	recipeList+="</center></body></html>"
-	return recipeList
-  	#return render_template("StoneSoup.html", recipeList = recipeList)
-
-
-
+  recipes = response['recipes']
+  return render_template("results.html", recipes=recipes)
 
 @app.errorhandler(404)
 def page_not_found(error):
